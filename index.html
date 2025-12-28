@@ -5,19 +5,15 @@
   <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover" />
   <title>SD바이오센서 자재팀 출근부 (급여자동계산 V3)</title>
 
-  <!-- ✅ (추가 1) PWA: manifest 연결 -->
+  <!-- ✅ PWA/아이콘 (반드시 head 안) -->
   <link rel="manifest" href="./manifest.json" />
-  <!-- ✅ (추가 2) PWA: 테마 컬러 -->
   <meta name="theme-color" content="#0b0f14" />
+  <link rel="icon" href="./favicon.ico" />
+  <link rel="apple-touch-icon" href="./apple-touch-icon.png" />
 
   <link rel="stylesheet" href="./styles.css" />
-  <link rel="manifest" href="./manifest.json" />
-
-<meta name="theme-color" content="#0b0f14" />
-
-<link rel="icon" href="./favicon.ico" />
-<link rel="apple-touch-icon" href="./apple-touch-icon.png" />
 </head>
+
 <body>
   <div class="wrap">
     <header class="top">
@@ -86,7 +82,7 @@
       </div>
 
       <div class="hint">
-        연장시간은 (퇴근-출근) - 기준근무시간으로 계산되며, <b>30분 단위로 자동 끊김</b> 처리됩니다.  
+        연장시간은 (퇴근-출근) - 기준근무시간으로 계산되며, <b>30분 단위로 자동 끊김</b> 처리됩니다.
         심야시간은 출근~퇴근 구간에서 <b>22:00~06:00</b>에 겹치는 시간이 자동 누적됩니다.
       </div>
     </section>
@@ -149,12 +145,5 @@
   </div>
 
   <script src="./app.js"></script>
-
-  <!-- ✅ (추가) Service Worker 등록 -->
-  <script>
-    if ("serviceWorker" in navigator) {
-      navigator.serviceWorker.register("./sw.js");
-    }
-  </script>
 </body>
 </html>
