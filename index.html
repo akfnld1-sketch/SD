@@ -1,0 +1,200 @@
+<!doctype html>
+<html lang="ko" data-theme="light">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover" />
+  <title>SD바이오센서 출근부 (개인용)</title>
+
+  <link rel="manifest" href="./manifest.json">
+  <meta name="theme-color" content="#0b1220" />
+  <link rel="icon" href="./icon-192.png">
+
+  <link rel="stylesheet" href="./styles.css" />
+</head>
+<body>
+  <div class="wrap">
+
+    <header class="top">
+      <div class="topLeft">
+        <h1 id="appTitle">SD바이오센서 출근부 <span class="pill">PERSONAL</span></h1>
+        <div class="sub" id="todayLabel"></div>
+      </div>
+
+      <div class="topBtns">
+        <button class="btn ghost" id="btnExportCsv" type="button">CSV(월) 내보내기</button>
+        <button class="btn ghost" id="btnBackup" type="button">백업(JSON)</button>
+        <button class="btn ghost" id="btnRestore" type="button">복원(JSON)</button>
+        <input id="fileRestore" type="file" accept="application/json" style="display:none" />
+      </div>
+    </header>
+
+    <!-- 탭 -->
+    <nav class="tabs">
+      <button class="tab active" data-tab="tab-att">출근부</button>
+      <button class="tab" data-tab="tab-report">월간리포트</button>
+      <button class="tab" data-tab="tab-settings">설정</button>
+    </nav>
+
+    <!-- ✅ 출근부 -->
+    <section class="card tabPane" id="tab-att">
+      <div class="cardHead">
+        <h2 id="attTitle">출근부</h2>
+        <div class="mini">출근/퇴근 누를 때마다 랜덤 메시지 표시</div>
+      </div>
+
+      <div class="row">
+        <div class="field" style="flex:1">
+          <label>선택 날짜</label>
+          <div class="inline">
+            <button class="btn ghost" id="btnPrevMonth" type="button">◀</button>
+            <div class="calMonth" id="monthLabel"></div>
+            <button class="btn ghost" id="btnNextMonth" type="button">▶</button>
+          </div>
+        </div>
+      </div>
+
+      <div class="dow">
+        <div>일</div><div>월</div><div>화</div><div>수</div><div>목</div><div>금</div><div>토</div>
+      </div>
+      <div id="calendar" class="calendar"></div>
+
+      <div class="divider"></div>
+
+      <div class="row">
+        <div class="field" style="flex:1">
+          <label>출근시간</label>
+          <input class="input" id="inTime" type="time" step="60">
+        </div>
+        <div class="field" style="flex:1">
+          <label>퇴근시간</label>
+          <input class="input" id="outTime" type="time" step="60">
+        </div>
+      </div>
+
+      <div class="row">
+        <button class="btn" id="btnCheckIn" type="button">✅ 출근 기록</button>
+        <button class="btn" id="btnCheckOut" type="button">🏁 퇴근 기록</button>
+        <button class="btn ghost" id="btnClearDay" type="button">이 날짜 초기화</button>
+      </div>
+
+      <div class="row">
+        <div class="field" style="flex:1">
+          <label>상태</label>
+          <select class="input" id="statusSelect">
+            <option value="work">근무</option>
+            <option value="late">지각</option>
+            <option value="absent">결근</option>
+            <option value="leave">연차(전일)</option>
+            <option value="half">반차(0.5)</option>
+          </select>
+        </div>
+        <div class="field" style="flex:2">
+          <label>비고</label>
+          <input class="input" id="noteInput" type="text" placeholder="예: 특이사항">
+        </div>
+      </div>
+
+      <div class="hint" id="daySummary"></div>
+    </section>
+
+    <!-- ✅ 월간리포트 -->
+    <section class="card tabPane hidden" id="tab-report">
+      <div class="cardHead">
+        <h2>월간 리포트</h2>
+        <div class="mini">선택한 월 기준 통계 + CSV 내보내기</div>
+      </div>
+
+      <div class="row">
+        <div class="field" style="flex:1">
+          <label>리포트 월</label>
+          <div class="inline">
+            <button class="btn ghost" id="btnRepPrev" type="button">◀</button>
+            <div class="calMonth" id="repMonthLabel"></div>
+            <button class="btn ghost" id="btnRepNext" type="button">▶</button>
+          </div>
+        </div>
+      </div>
+
+      <div class="reportGrid">
+        <div class="reportCard">
+          <div class="reportTitle">근무</div>
+          <div class="reportValue" id="repWork">0</div>
+        </div>
+        <div class="reportCard">
+          <div class="reportTitle">지각</div>
+          <div class="reportValue" id="repLate">0</div>
+        </div>
+        <div class="reportCard">
+          <div class="reportTitle">연차</div>
+          <div class="reportValue" id="repLeave">0</div>
+        </div>
+        <div class="reportCard">
+          <div class="reportTitle">반차</div>
+          <div class="reportValue" id="repHalf">0</div>
+        </div>
+        <div class="reportCard">
+          <div class="reportTitle">결근</div>
+          <div class="reportValue" id="repAbsent">0</div>
+        </div>
+        <div class="reportCard">
+          <div class="reportTitle">총 근무시간</div>
+          <div class="reportValue" id="repHours">0h</div>
+        </div>
+      </div>
+
+      <div class="divider"></div>
+      <div class="mini" id="repHint"></div>
+    </section>
+
+    <!-- ✅ 설정 -->
+    <section class="card tabPane hidden" id="tab-settings">
+      <div class="cardHead">
+        <h2>설정 (한 번 저장하면 계속 유지)</h2>
+        <div class="mini">이름/시급/테마 저장</div>
+      </div>
+
+      <div class="row">
+        <div class="field" style="flex:1">
+          <label>내 이름</label>
+          <input class="input" id="profileName" type="text" placeholder="예: 황현우">
+        </div>
+        <div class="field" style="flex:1">
+          <label>시급(기본)</label>
+          <input class="input" id="profileWage" type="number" min="0" step="10" placeholder="예: 10320">
+        </div>
+      </div>
+
+      <div class="row">
+        <div class="field" style="flex:1">
+          <label>테마(배경)</label>
+          <select class="input" id="themeSelect">
+            <option value="light">라이트(기본)</option>
+            <option value="mint">민트</option>
+            <option value="blue">블루</option>
+            <option value="warm">웜(아이보리)</option>
+            <option value="dark">다크</option>
+          </select>
+        </div>
+        <div class="field" style="flex:1">
+          <label>저장</label>
+          <button class="btn" id="btnSaveSettings" type="button">저장하기</button>
+        </div>
+      </div>
+
+      <div class="hint">
+        ✅ 이름/시급/테마는 <b>이 기기(브라우저)</b>에 저장됩니다. <br>
+        다른 기기에서 쓰려면 상단의 <b>백업(JSON)</b> → 다른 기기에서 <b>복원(JSON)</b> 하시면 됩니다.
+      </div>
+    </section>
+
+    <footer class="foot">
+      <small>서버 없음 · 데이터는 이 기기(브라우저)에만 저장됩니다 · PWA 설치 가능</small>
+    </footer>
+  </div>
+
+  <!-- 토스트 -->
+  <div id="toast" class="toast hidden" role="status" aria-live="polite"></div>
+
+  <script src="./app.js"></script>
+</body>
+</html>
